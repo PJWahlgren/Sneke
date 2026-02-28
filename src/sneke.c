@@ -11,7 +11,7 @@ Board init_board(int height, int width) {
   }
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
-      board.board[i * width + j] = Empty;
+      board.entities[i * width + j] = Empty;
     }
   }
   return board;
@@ -26,7 +26,15 @@ void modify_at(Board *board, Entity e, int x, int y) {
     printf("Placement is outside of bounds");
     return;
   }
-  board->board[y * board->width + x] = e;
+  board->entities[y * board->width + x] = e;
+}
+
+Entity get_entity_at(Board *board, int x, int y) {
+  if (is_out_of_bounds(board, &x, &y)) {
+    printf("Indexing out of bounds");
+    exit(EXIT_FAILURE);
+  }
+  return board->entities[y * board->width + x];
 }
 // TEsting documentation thingy lol what?
 void print_entity(Entity *entity) {
@@ -53,7 +61,7 @@ void print_entity(Entity *entity) {
 void print_board(Board *board) {
   for (int row = 0; row < board->height; row++) {
     for (int col = 0; col < board->width; col++) {
-      print_entity(&board->board[row * board->width + col]);
+      print_entity(&board->entities[row * board->width + col]);
     }
     printf("\n");
   }
