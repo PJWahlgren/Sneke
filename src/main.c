@@ -1,28 +1,30 @@
-#include "raylib.h"
+#include "control.h"
 #include "sneke.h"
+#include "view.h"
+#include <stdio.h>
 
 int main(int argc, char *argv[]) {
   int height = 8;
   int width = 8;
+
   Board board = init_board(height, width);
-  modify_at(&board, Head, 1, 0);
-  print_board(&board);
-  SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
-  InitWindow(1280, 800, "Sneke");
-  print_board(&board);
+  BoardView view;
+  PollEvent event;
 
-  Rectangle r = {0, 0, 100, 100};
+  init_view(&view, &board, 900, 800);
+  print_values(&view);
+  init_board_window(&view);
 
-  while (!WindowShouldClose()) {
-    BeginDrawing();
-    ClearBackground(BLACK);
-    if (IsKeyPressed(KEY_SPACE)) {
-      r.x = ((int)r.x + 100) % 500;
+  while (1) {
+    event = get_event();
+    if (has_event_happened(&event.PRESSED, CLOSE_GAME)) {
+      break;
     }
-    DrawRectangleRec(r, WHITE);
-    DrawText("Sneke", 200, 200, 20, WHITE);
-    EndDrawing();
+    draw_game(&view);
+    printf("%b\n", event.HELD);
   }
-  CloseWindow();
+
+  close_view_window();
+
   return 0;
 }
