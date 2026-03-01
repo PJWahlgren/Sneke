@@ -95,3 +95,4 @@ void draw_game(BoardView *view) {
   draw_board(view);
   EndDrawing();
 }
+void close_view_window() { CloseWindow(); }
