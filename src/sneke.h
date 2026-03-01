@@ -1,7 +1,7 @@
 #ifndef SNEKE_H
 #define SNEKE_H
 
-#define MAX_BOARD_SIZE 16 * 16
+#define MAX_BOARD_SIZE 32 * 32
 typedef enum Entity { Empty, Head, Snake, Fruit } Entity;
 
 typedef struct Board {

@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -Wall -Wextra -Werror -Wunused-parameter -g
+CFLAGS := -Wall -Wextra -Werror -Wno-unused-parameter -g
 LDFLAGS := -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 SRC_DIR := ./src
 BUILD_DIR := ./build

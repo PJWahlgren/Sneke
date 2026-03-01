@@ -3,7 +3,9 @@
 #include <stdlib.h>
 
 Board init_board(int height, int width) {
-  Board board = {height, width};
+  Board board;
+  board.height = height;
+  board.width = width;
   if (height * width > MAX_BOARD_SIZE) {
     printf("Board size set to %dbut max size is %d\n", height * width,
            MAX_BOARD_SIZE);
