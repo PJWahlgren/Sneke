@@ -1,15 +1,8 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
+#include "control_linker.h"
 #include <stdint.h>
-
-typedef enum : uint8_t {
-  UP = 0,
-  LEFT = 1,
-  DOWN = 2,
-  RIGHT = 3,
-  CLOSE_GAME = 4,
-} GameEvent;
 
 typedef struct {
   uint8_t PRESSED;

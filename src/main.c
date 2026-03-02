@@ -1,13 +1,15 @@
 #include "control.h"
+#include "control_linker.h"
 #include "sneke.h"
 #include "view.h"
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
   int height = 8;
-  int width = 8;
+  int width = 9;
 
   Board board = init_board(height, width);
+  Snok snake = init_snake(&board, 1337);
   BoardView view;
   PollEvent event;
 
@@ -20,8 +22,19 @@ int main(int argc, char *argv[]) {
     if (has_event_happened(&event.PRESSED, CLOSE_GAME)) {
       break;
     }
+    if (has_event_happened(&event.PRESSED, NORTH)) {
+      move_snake(&board, &snake, NORTH);
+    }
+    if (has_event_happened(&event.PRESSED, WEST)) {
+      move_snake(&board, &snake, WEST);
+    }
+    if (has_event_happened(&event.PRESSED, SOUTH)) {
+      move_snake(&board, &snake, SOUTH);
+    }
+    if (has_event_happened(&event.PRESSED, EAST)) {
+      move_snake(&board, &snake, EAST);
+    }
     draw_game(&view);
-    printf("%b\n", event.HELD);
   }
 
   close_view_window();

@@ -1,5 +1,6 @@
 #include "view.h"
 #include "raylib.h"
+#include "sneke.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -20,7 +21,7 @@ int get_integer(BoardView *view, int addr) {
 Color get_color(BoardView *view, int addr) {
   Color temp;
   int a = view->var[addr];
-  memcpy(&temp, &view->_buf[a], sizeof(int));
+  memcpy(&temp, &view->_buf[a], sizeof(Color));
   return temp;
 }
 int get_window_width(BoardView *view) { return get_integer(view, 1); }
@@ -57,8 +58,8 @@ void init_view(BoardView *view, Board *board, int width, int height) {
   int square_height = height / board->height;
   copy_to_buffer(view, &addr, &square_width, &i, sizeof(square_width));
   copy_to_buffer(view, &addr, &square_height, &i, sizeof(square_height));
-  copy_to_buffer(view, &addr, &GRAY, &i, sizeof(GRAY));
-  copy_to_buffer(view, &addr, &BLUE, &i, sizeof(BLUE));
+  copy_to_buffer(view, &addr, &DARKGREEN, &i, sizeof(Color));
+  copy_to_buffer(view, &addr, &LIME, &i, sizeof(Color));
   view->var_initialized = (char)addr;
   view->size_of_allocation = (char)i;
 }
@@ -78,11 +79,20 @@ void draw_board(BoardView *view) {
   int sh = get_square_height(view);
   Board *board = get_board(view);
   bool alternate = true;
-  for (int row = 0; row < board->height; row++) {
-    for (int col = 0; col < board->width; col++) {
-      Color current_color = alternate ? get_col1(view) : get_col2(view);
+  for (int y = 0; y < board->height; y++) {
+    for (int x = 0; x < board->width; x++) {
+      Color current_color = BLACK;
+      Entity e = get_entity_at(board, x, y);
+      switch (e) {
+      case HEAD:
+        current_color = WHITE;
+        printf("HEAD at (%d,%d)\n", x, y);
+        break;
+      default:
+        current_color = alternate ? get_col1(view) : get_col2(view);
+      }
       alternate = !alternate;
-      DrawRectangle(col * sw, row * sh, sw, sh, current_color);
+      DrawRectangle(x * sw, y * sh, sw, sh, current_color);
     }
     if (!(board->width % 2)) {
       alternate = !alternate;
