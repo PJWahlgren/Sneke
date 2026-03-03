@@ -91,6 +91,9 @@ void draw_board(BoardView *view) {
       case BODY:
         current_color = GRAY;
         break;
+      case FRUIT:
+        current_color = RED;
+        break;
       default:
         current_color = alternate ? get_col1(view) : get_col2(view);
       }

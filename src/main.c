@@ -8,8 +8,8 @@ int main(int argc, char *argv[]) {
   int height = 8;
   int width = 9;
 
-  Board board = init_board(height, width);
-  Snok snake = init_snake(&board, 1337);
+  Board board = init_board(height, width, 2, 1337);
+  Snok snake = init_snake(&board);
   BoardView view;
   PollEvent event;
 

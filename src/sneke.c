@@ -1,5 +1,6 @@
 #include "sneke.h"
 #include "control_linker.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -7,10 +8,56 @@ Position add_position(Position pos1, Position pos2) {
   return (Position){.x = pos1.x + pos2.x, .y = pos1.y + pos2.y};
 }
 
-Board init_board(int height, int width) {
+char is_out_of_bounds(Board *board, int *x, int *y) {
+  return *x >= board->width || *x < 0 || *y >= board->height || *y < 0;
+}
+
+void modify_at(Board *board, Entity e, int x, int y) {
+  if (is_out_of_bounds(board, &x, &y)) {
+    printf("(%d,%d) is outside of bounds\n", x, y);
+    return;
+  }
+  board->entities[y * board->width + x] = e;
+}
+
+Position get_random_board_pos(Board *board) {
+  int x = rand() % board->width;
+  int y = rand() % board->height;
+  return (Position){.x = x, .y = y};
+}
+
+Entity get_entity_at(Board *board, int x, int y) {
+  if (is_out_of_bounds(board, &x, &y)) {
+    printf("Indexing out of bounds\n");
+    exit(EXIT_FAILURE);
+  }
+  return board->entities[y * board->width + x];
+}
+
+uint8_t fruit_exists(Board *board, Position pos) {
+  return get_entity_at(board, pos.x, pos.y) == FRUIT;
+}
+
+uint8_t snek_exists(Board *board, Position pos) {
+  Entity e = get_entity_at(board, pos.x, pos.y);
+  return e == HEAD || e == BODY;
+}
+
+void spawn_fruit(Board *board) {
+  Position pos = get_random_board_pos(board);
+  while (fruit_exists(board, pos) || snek_exists(board, pos)) {
+    pos = get_random_board_pos(board);
+  }
+  modify_at(board, FRUIT, pos.x, pos.y);
+}
+
+Board init_board(int height, int width, int fruit_amount,
+                 unsigned int random_seed) {
   Board board;
   board.height = height;
   board.width = width;
+  board.fruit_amount = fruit_amount;
+  board.random_seed = random_seed;
   if (height * width > MAX_BOARD_SIZE) {
     printf("Board size set to %d but max size is %d\n", height * width,
            MAX_BOARD_SIZE);
@@ -21,15 +68,17 @@ Board init_board(int height, int width) {
       board.entities[i * width + j] = EMPTY;
     }
   }
+  for (int i = 0; i < fruit_amount; i++) {
+    spawn_fruit(&board);
+  }
   return board;
 }
 
-Snok init_snake(Board *board, unsigned int random_seed) {
-  srand(random_seed);
-  int x = rand() % board->width;
-  int y = rand() % board->height;
-  modify_at(board, HEAD, x, y);
-  Snok snake = {.pos = {.x = x, .y = y}, .length = 0, START};
+Snok init_snake(Board *board) {
+  srand(board->random_seed);
+  Position pos = get_random_board_pos(board);
+  modify_at(board, HEAD, pos.x, pos.y);
+  Snok snake = {.pos = pos, .length = 0, START};
   return snake;
 }
 
@@ -77,6 +126,10 @@ void move_snake(Board *board, Snok *snake, Direction dir) {
   Position pos = snake->pos;
   Position relative_new_pos = direction_to_position(dir);
   Position new_pos = add_position(pos, relative_new_pos);
+  if (fruit_exists(board, new_pos)) {
+    snek_expansion(board, snake);
+    spawn_fruit(board);
+  }
   // If the head can't move to the new pos it will
   // stop here.
   modify_at(board, HEAD, new_pos.x, new_pos.y);
@@ -94,25 +147,6 @@ void move_snake(Board *board, Snok *snake, Direction dir) {
   }
 }
 
-char is_out_of_bounds(Board *board, int *x, int *y) {
-  return *x >= board->width || *x < 0 || *y >= board->height || *y < 0;
-}
-
-void modify_at(Board *board, Entity e, int x, int y) {
-  if (is_out_of_bounds(board, &x, &y)) {
-    printf("(%d,%d) is outside of bounds\n", x, y);
-    return;
-  }
-  board->entities[y * board->width + x] = e;
-}
-
-Entity get_entity_at(Board *board, int x, int y) {
-  if (is_out_of_bounds(board, &x, &y)) {
-    printf("Indexing out of bounds\n");
-    exit(EXIT_FAILURE);
-  }
-  return board->entities[y * board->width + x];
-}
 // TEsting documentation thingy lol what?
 void print_entity(Entity *entity) {
   char c;
