@@ -72,6 +72,19 @@ void init_board_window(BoardView *view) {
   InitWindow(width, height, TITLE);
 }
 
+void draw_apple(int x, int y, int sw, int sh) {
+  int off_set_x = 0;
+  int off_set_y = 0;
+  if (sw > 10) {
+    off_set_x = 10;
+  }
+  if (sh > 10) {
+    off_set_y = 10;
+  }
+  DrawRectangle(x * sw + off_set_x, y * sh + off_set_y, sw - 2 * off_set_x,
+                sh - 2 * off_set_y, RED);
+}
+
 void draw_board(BoardView *view) {
   // int w = get_window_width(view);
   // int h = get_window_height(view);
@@ -86,19 +99,23 @@ void draw_board(BoardView *view) {
       switch (e) {
       case HEAD:
         current_color = WHITE;
+        DrawRectangle(x * sw, y * sh, sw, sh, current_color);
         // printf("HEAD at (%d,%d)\n", x, y);
         break;
       case BODY:
         current_color = GRAY;
+        DrawRectangle(x * sw, y * sh, sw, sh, current_color);
         break;
       case FRUIT:
-        current_color = RED;
+        current_color = alternate ? get_col1(view) : get_col2(view);
+        DrawRectangle(x * sw, y * sh, sw, sh, current_color);
+        draw_apple(x, y, sw, sh);
         break;
       default:
         current_color = alternate ? get_col1(view) : get_col2(view);
+        DrawRectangle(x * sw, y * sh, sw, sh, current_color);
       }
       alternate = !alternate;
-      DrawRectangle(x * sw, y * sh, sw, sh, current_color);
     }
     if (!(board->width % 2)) {
       alternate = !alternate;

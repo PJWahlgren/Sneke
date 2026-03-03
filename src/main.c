@@ -2,18 +2,17 @@
 #include "control_linker.h"
 #include "sneke.h"
 #include "view.h"
-#include <stdio.h>
 
 int main(int argc, char *argv[]) {
-  int height = 8;
-  int width = 9;
+  int height = 10;
+  int width = 12;
 
   Board board = init_board(height, width, 2, 1337);
   Snok snake = init_snake(&board);
   BoardView view;
   PollEvent event;
 
-  init_view(&view, &board, 900, 800);
+  init_view(&view, &board, 1200, 1000);
   print_values(&view);
   init_board_window(&view);
 
