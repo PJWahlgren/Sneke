@@ -17,7 +17,6 @@ typedef struct Board {
   int height;
   int width;
   int fruit_amount;
-  unsigned int random_seed;
 } Board;
 
 typedef struct Snok {

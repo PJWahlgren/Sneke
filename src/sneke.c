@@ -57,7 +57,7 @@ Board init_board(int height, int width, int fruit_amount,
   board.height = height;
   board.width = width;
   board.fruit_amount = fruit_amount;
-  board.random_seed = random_seed;
+  srand(random_seed);
   if (height * width > MAX_BOARD_SIZE) {
     printf("Board size set to %d but max size is %d\n", height * width,
            MAX_BOARD_SIZE);
@@ -75,7 +75,6 @@ Board init_board(int height, int width, int fruit_amount,
 }
 
 Snok init_snake(Board *board) {
-  srand(board->random_seed);
   Position pos = get_random_board_pos(board);
   modify_at(board, HEAD, pos.x, pos.y);
   Snok snake = {.pos = pos, .length = 0, START};
