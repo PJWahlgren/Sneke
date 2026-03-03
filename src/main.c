@@ -34,6 +34,9 @@ int main(int argc, char *argv[]) {
     if (has_event_happened(&event.PRESSED, EAST)) {
       move_snake(&board, &snake, EAST);
     }
+    if (has_event_happened(&event.PRESSED, TEST_KEY)) {
+      snek_expansion(&board, &snake);
+    }
     draw_game(&view);
   }
 

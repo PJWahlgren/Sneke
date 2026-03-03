@@ -47,5 +47,6 @@ PollEvent get_event() {
   key_event(&new_event, SOUTH, GAME_DOWN);
   key_event(&new_event, EAST, GAME_RIGHT);
   key_event(&new_event, CLOSE_GAME, GAME_CLOSE);
+  key_event(&new_event, TEST_KEY, KEY_SPACE);
   return new_event;
 }

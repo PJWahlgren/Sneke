@@ -86,7 +86,10 @@ void draw_board(BoardView *view) {
       switch (e) {
       case HEAD:
         current_color = WHITE;
-        printf("HEAD at (%d,%d)\n", x, y);
+        // printf("HEAD at (%d,%d)\n", x, y);
+        break;
+      case BODY:
+        current_color = GRAY;
         break;
       default:
         current_color = alternate ? get_col1(view) : get_col2(view);

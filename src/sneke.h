@@ -13,9 +13,9 @@ typedef struct Position {
 } Position;
 
 typedef struct Board {
+  Entity entities[MAX_BOARD_SIZE];
   int height;
   int width;
-  Entity entities[MAX_BOARD_SIZE];
 } Board;
 
 typedef struct Snok {
@@ -28,6 +28,7 @@ typedef struct Snok {
 Snok init_snake(Board *board, unsigned int random_seed);
 Board init_board(int height, int width);
 void move_snake(Board *board, Snok *snake, Direction dir);
+void snek_expansion(Board *board, Snok *snake);
 
 void modify_at(Board *board, Entity e, int x, int y);
 

@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+Position add_position(Position pos1, Position pos2) {
+  return (Position){.x = pos1.x + pos2.x, .y = pos1.y + pos2.y};
+}
+
 Board init_board(int height, int width) {
   Board board;
   board.height = height;
@@ -44,15 +48,50 @@ Position direction_to_position(Direction dir) {
     exit(EXIT_FAILURE);
   }
 }
+// It goes in the opposite direction of
+// direction to position
+Position trace_the_snek(Direction dir) {
+  switch (dir) {
+  case NORTH:
+    return direction_to_position(SOUTH);
+  case WEST:
+    return direction_to_position(EAST);
+  case SOUTH:
+    return direction_to_position(NORTH);
+  case EAST:
+    return direction_to_position(WEST);
+  default:
+    return direction_to_position(dir);
+  }
+}
+
+void snek_expansion(Board *board, Snok *snake) {
+  Direction *body = snake->body;
+  int *length = &snake->length;
+  Direction ahead_dir = *length ? body[*length - 1] : snake->dir;
+  body[*length] = ahead_dir;
+  (*length)++;
+  printf("length: %d, dir: %d\n", *length, ahead_dir);
+}
 void move_snake(Board *board, Snok *snake, Direction dir) {
-  Position *old_pos = &snake->pos;
+  Position pos = snake->pos;
   Position relative_new_pos = direction_to_position(dir);
-  Position new_pos = {.x = old_pos->x + relative_new_pos.x,
-                      .y = old_pos->y + relative_new_pos.y};
-  modify_at(board, EMPTY, old_pos->x, old_pos->y);
+  Position new_pos = add_position(pos, relative_new_pos);
+  // If the head can't move to the new pos it will
+  // stop here.
   modify_at(board, HEAD, new_pos.x, new_pos.y);
+  modify_at(board, EMPTY, pos.x, pos.y);
   snake->dir = dir;
+  Direction copy = dir;
   snake->pos = new_pos;
+  for (int i = 0; i < snake->length; i++) {
+    copy = snake->body[i];
+    snake->body[i] = dir;
+    modify_at(board, BODY, pos.x, pos.y);
+    pos = add_position(pos, trace_the_snek(copy));
+    modify_at(board, EMPTY, pos.x, pos.y);
+    dir = copy;
+  }
 }
 
 char is_out_of_bounds(Board *board, int *x, int *y) {
