@@ -122,10 +122,25 @@ void draw_board(BoardView *view) {
     }
   }
 }
-void draw_game(BoardView *view) {
+void draw_gui(BoardView *view, GameInfo *info) {
+  int w = get_window_width(view);
+  int h = get_window_height(view);
+  char length[6 + 4];
+  sprintf(length, "length: %d", *info->length);
+  DrawText(length, 100, 100, 48, WHITE);
+  if (*info->game_state == GAME_OVER) {
+    Color game_over_red = {255, 0, 0, 100};
+    DrawRectangle(0, 0, w, h, game_over_red);
+    char *game_over_text = "Press r to restart";
+    int text_length = MeasureText(game_over_text, 48);
+    DrawText(game_over_text, w / 2 - text_length / 2, h / 2, 48, WHITE);
+  }
+}
+void draw_game(BoardView *view, GameInfo *info) {
   BeginDrawing();
   ClearBackground(BLACK);
   draw_board(view);
+  draw_gui(view, info);
   EndDrawing();
 }
 void close_view_window() { CloseWindow(); }

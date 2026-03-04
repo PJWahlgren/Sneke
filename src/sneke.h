@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 typedef enum Entity { EMPTY, HEAD, BODY, FRUIT } Entity;
+typedef enum GameState { RUNNING, GAME_OVER } GameState;
 typedef GameEvent Direction;
 
 typedef struct Position {
@@ -17,6 +18,7 @@ typedef struct Board {
   int height;
   int width;
   int fruit_amount;
+  GameState game_state;
 } Board;
 
 typedef struct Snok {
@@ -25,6 +27,11 @@ typedef struct Snok {
   Direction dir;
   Direction body[MAX_BOARD_SIZE - 1];
 } Snok;
+
+typedef struct GameInfo {
+  int *length;
+  GameState *game_state;
+} GameInfo;
 
 Snok init_snake(Board *board);
 Board init_board(int height, int width, int fruit_amount,

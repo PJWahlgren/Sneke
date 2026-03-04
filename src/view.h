@@ -15,6 +15,6 @@ typedef struct {
 void print_values(BoardView *view);
 void init_view(BoardView *view, Board *board, int width, int height);
 void init_board_window(BoardView *view);
-void draw_game(BoardView *view);
+void draw_game(BoardView *view, GameInfo *info);
 void close_view_window();
 #endif

@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <unistd.h>
 
+#define POLL_RATE 400
+
 Board board;
 Snok snake;
 BoardView view;
@@ -14,6 +16,11 @@ uint8_t is_running = 1;
 
 void *call_game(void *arg) {
   while (is_running) {
+    if (!has_any_event_happened(&event)) {
+      move_snake(&board, &snake, snake.dir);
+      usleep(POLL_RATE * 1000);
+      continue;
+    }
     if (has_event_happened(&event.HELD, NORTH)) {
       move_snake(&board, &snake, NORTH);
     }
@@ -29,7 +36,7 @@ void *call_game(void *arg) {
     if (has_event_happened(&event.HELD, TEST_KEY)) {
       snek_expansion(&board, &snake);
     }
-    usleep(400 * 1000);
+    usleep(POLL_RATE * 1000);
   }
   return NULL;
 }
@@ -40,6 +47,7 @@ int main(int argc, char *argv[]) {
 
   board = init_board(height, width, 2, 1337);
   snake = init_snake(&board);
+  GameInfo info = {.length = &snake.length, .game_state = &board.game_state};
 
   init_view(&view, &board, 1200, 1000);
   print_values(&view);
@@ -53,7 +61,7 @@ int main(int argc, char *argv[]) {
     if (has_event_happened(&event.PRESSED, CLOSE_GAME)) {
       is_running = 0;
     }
-    draw_game(&view);
+    draw_game(&view, &info);
   }
 
   close_view_window();

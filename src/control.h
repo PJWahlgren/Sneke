@@ -13,5 +13,6 @@ typedef struct {
 
 char has_event_happened(uint8_t *events, GameEvent event);
 
+uint8_t has_any_event_happened(PollEvent *events);
 PollEvent get_event();
 #endif

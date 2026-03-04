@@ -57,6 +57,7 @@ Board init_board(int height, int width, int fruit_amount,
   board.height = height;
   board.width = width;
   board.fruit_amount = fruit_amount;
+  board.game_state = RUNNING;
   srand(random_seed);
   if (height * width > MAX_BOARD_SIZE) {
     printf("Board size set to %d but max size is %d\n", height * width,
@@ -122,15 +123,26 @@ void snek_expansion(Board *board, Snok *snake) {
   printf("length: %d, dir: %d\n", *length, ahead_dir);
 }
 void move_snake(Board *board, Snok *snake, Direction dir) {
+
+  if (dir == START) {
+    return;
+  }
+
   Position pos = snake->pos;
   Position relative_new_pos = direction_to_position(dir);
   Position new_pos = add_position(pos, relative_new_pos);
+
+  if (is_out_of_bounds(board, &new_pos.x, &new_pos.y) ||
+      snek_exists(board, new_pos)) {
+    board->game_state = GAME_OVER;
+    return;
+  }
+
   if (fruit_exists(board, new_pos)) {
     snek_expansion(board, snake);
     spawn_fruit(board);
   }
-  // If the head can't move to the new pos it will
-  // stop here.
+
   modify_at(board, HEAD, new_pos.x, new_pos.y);
   modify_at(board, EMPTY, pos.x, pos.y);
   snake->dir = dir;
