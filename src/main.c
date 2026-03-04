@@ -2,39 +2,56 @@
 #include "control_linker.h"
 #include "sneke.h"
 #include "view.h"
+#include <pthread.h>
+#include <stdint.h>
+#include <unistd.h>
+
+Board board;
+Snok snake;
+BoardView view;
+PollEvent event;
+uint8_t is_running = 1;
+
+void *call_game(void *arg) {
+  while (is_running) {
+    if (has_event_happened(&event.HELD, NORTH)) {
+      move_snake(&board, &snake, NORTH);
+    }
+    if (has_event_happened(&event.HELD, WEST)) {
+      move_snake(&board, &snake, WEST);
+    }
+    if (has_event_happened(&event.HELD, SOUTH)) {
+      move_snake(&board, &snake, SOUTH);
+    }
+    if (has_event_happened(&event.HELD, EAST)) {
+      move_snake(&board, &snake, EAST);
+    }
+    if (has_event_happened(&event.HELD, TEST_KEY)) {
+      snek_expansion(&board, &snake);
+    }
+    usleep(400 * 1000);
+  }
+  return NULL;
+}
 
 int main(int argc, char *argv[]) {
   int height = 10;
   int width = 12;
 
-  Board board = init_board(height, width, 2, 1337);
-  Snok snake = init_snake(&board);
-  BoardView view;
-  PollEvent event;
+  board = init_board(height, width, 2, 1337);
+  snake = init_snake(&board);
 
   init_view(&view, &board, 1200, 1000);
   print_values(&view);
   init_board_window(&view);
 
-  while (1) {
+  pthread_t thread;
+  pthread_create(&thread, NULL, call_game, NULL);
+
+  while (is_running) {
     event = get_event();
     if (has_event_happened(&event.PRESSED, CLOSE_GAME)) {
-      break;
-    }
-    if (has_event_happened(&event.PRESSED, NORTH)) {
-      move_snake(&board, &snake, NORTH);
-    }
-    if (has_event_happened(&event.PRESSED, WEST)) {
-      move_snake(&board, &snake, WEST);
-    }
-    if (has_event_happened(&event.PRESSED, SOUTH)) {
-      move_snake(&board, &snake, SOUTH);
-    }
-    if (has_event_happened(&event.PRESSED, EAST)) {
-      move_snake(&board, &snake, EAST);
-    }
-    if (has_event_happened(&event.PRESSED, TEST_KEY)) {
-      snek_expansion(&board, &snake);
+      is_running = 0;
     }
     draw_game(&view);
   }
