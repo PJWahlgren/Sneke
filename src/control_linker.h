@@ -9,6 +9,6 @@ typedef enum : uint8_t {
   EAST = 3,
   START = 4, // No movement until the player has moved
   CLOSE_GAME = 5,
-  TEST_KEY = 6
+  RESTART = 6
 } GameEvent;
 #endif

@@ -97,6 +97,7 @@ Position direction_to_position(Direction dir) {
     exit(EXIT_FAILURE);
   }
 }
+
 // It goes in the opposite direction of
 // direction to position
 Position trace_the_snek(Direction dir) {
@@ -122,12 +123,14 @@ void snek_expansion(Board *board, Snok *snake) {
   (*length)++;
   printf("length: %d, dir: %d\n", *length, ahead_dir);
 }
+
 void move_snake(Board *board, Snok *snake, Direction dir) {
 
-  if (dir == START) {
+  if (dir == START || board->game_state == GAME_OVER) {
     return;
   }
 
+  snake->dir = dir;
   Position pos = snake->pos;
   Position relative_new_pos = direction_to_position(dir);
   Position new_pos = add_position(pos, relative_new_pos);
@@ -145,7 +148,6 @@ void move_snake(Board *board, Snok *snake, Direction dir) {
 
   modify_at(board, HEAD, new_pos.x, new_pos.y);
   modify_at(board, EMPTY, pos.x, pos.y);
-  snake->dir = dir;
   Direction copy = dir;
   snake->pos = new_pos;
   for (int i = 0; i < snake->length; i++) {

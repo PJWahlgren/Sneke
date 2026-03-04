@@ -4,6 +4,7 @@
 #include "view.h"
 #include <pthread.h>
 #include <stdint.h>
+#include <time.h>
 #include <unistd.h>
 
 #define POLL_RATE 400
@@ -33,9 +34,6 @@ void *call_game(void *arg) {
     if (has_event_happened(&event.HELD, EAST)) {
       move_snake(&board, &snake, EAST);
     }
-    if (has_event_happened(&event.HELD, TEST_KEY)) {
-      snek_expansion(&board, &snake);
-    }
     usleep(POLL_RATE * 1000);
   }
   return NULL;
@@ -44,8 +42,9 @@ void *call_game(void *arg) {
 int main(int argc, char *argv[]) {
   int height = 10;
   int width = 12;
+  int random_seed = time(NULL);
 
-  board = init_board(height, width, 2, 1337);
+  board = init_board(height, width, 2, random_seed);
   snake = init_snake(&board);
   GameInfo info = {.length = &snake.length, .game_state = &board.game_state};
 
@@ -60,6 +59,11 @@ int main(int argc, char *argv[]) {
     event = get_event();
     if (has_event_happened(&event.PRESSED, CLOSE_GAME)) {
       is_running = 0;
+    }
+    if (has_event_happened(&event.PRESSED, RESTART)) {
+      random_seed = time(NULL);
+      board = init_board(height, width, 2, random_seed);
+      snake = init_snake(&board);
     }
     draw_game(&view, &info);
   }
